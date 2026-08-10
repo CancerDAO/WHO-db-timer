@@ -1,0 +1,20 @@
+[Unit]
+Description=Build and atomically refresh the WHO ICTRP cancer-trial database
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=__SERVICE_USER__
+Group=__SERVICE_GROUP__
+WorkingDirectory=__PROJECT_ROOT__
+Environment=PYTHONUNBUFFERED=1
+ExecStart=__PYTHON__ __PROJECT_ROOT__/scripts/refresh_production_who_db.py --production-db __PROJECT_ROOT__/data/who_ictrp_cancer_trials.db --database-mode auto --headful
+ExecStartPost=+/usr/bin/systemctl try-restart who-mcp.service
+TimeoutStartSec=12h
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

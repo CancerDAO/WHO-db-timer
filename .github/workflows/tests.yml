@@ -1,0 +1,25 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt -r mcp_service/requirements.txt
+      - run: python -m unittest discover -s tests -p "test_*.py" -v
+      - name: Reject conflict markers and tracked runtime artifacts
+        shell: bash
+        run: |
+          ! git grep -nE '^(<<<<<<<|=======|>>>>>>>)'
+          ! git ls-files | grep -E '\.(db|sqlite|sqlite3|xml|zip|log)$'

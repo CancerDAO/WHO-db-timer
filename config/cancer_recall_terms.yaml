@@ -1,0 +1,175 @@
+﻿# UMIN-CTR local cancer recall terms.
+# Used after downloading the official English UMIN-CTR CSV snapshot.
+# Primary high-yield fields:
+# - Classification by malignancy
+# - Condition
+# - Public title / Scientific Title
+# Secondary review fields:
+# - Narrative objectives1
+# - Primary outcomes / Key secondary outcomes
+# - Interventions/Control_1..10
+# - Key inclusion/exclusion criteria
+
+hard_terms:
+  - cancer
+  - cancers
+  - carcinoma
+  - carcinomas
+  - adenocarcinoma
+  - adenocarcinomas
+  - sarcoma
+  - sarcomas
+  - neoplasm
+  - neoplasms
+  - tumor
+  - tumors
+  - tumour
+  - tumours
+  - malignant
+  - malignancy
+  - malignancies
+  - oncology
+  - oncologic
+  - oncological
+  - metastatic
+  - metastasis
+  - metastases
+  - leukemia
+  - leukaemia
+  - leukemic
+  - lymphoma
+  - lymphomas
+  - myeloma
+  - melanoma
+  - glioma
+  - glioblastoma
+  - blastoma
+  - myelodysplastic
+  - myeloproliferative
+  - antineoplastic
+  - solid tumor
+  - solid tumors
+  - solid tumour
+  - solid tumours
+  - lung cancer
+  - non-small cell lung cancer
+  - small cell lung cancer
+  - breast cancer
+  - colorectal cancer
+  - colon cancer
+  - rectal cancer
+  - gastric cancer
+  - stomach cancer
+  - liver cancer
+  - hepatocellular carcinoma
+  - pancreatic cancer
+  - prostate cancer
+  - thyroid cancer
+  - nasopharyngeal carcinoma
+  - head and neck cancer
+  - squamous cell carcinoma
+  - ovarian cancer
+  - cervical cancer
+  - endometrial cancer
+  - renal cell carcinoma
+  - kidney cancer
+  - bladder cancer
+  - urothelial carcinoma
+  - cholangiocarcinoma
+  - bile duct cancer
+  - gallbladder cancer
+  - esophageal cancer
+  - oesophageal cancer
+  - melanoma
+  - mesothelioma
+  - neuroblastoma
+  - retinoblastoma
+  - medulloblastoma
+  - hepatoblastoma
+  - nephroblastoma
+  - osteosarcoma
+  - ewing sarcoma
+  - rhabdomyosarcoma
+  - soft tissue sarcoma
+  - neuroendocrine tumor
+  - neuroendocrine tumour
+  - neuroendocrine carcinoma
+  - gastrointestinal stromal tumor
+  - gastrointestinal stromal tumour
+  - hematologic malignancy
+  - haematologic malignancy
+  - multiple myeloma
+  - hodgkin disease
+  - hodgkin lymphoma
+  - non-hodgkin lymphoma
+  - diffuse large b-cell lymphoma
+  - acute myeloid leukemia
+  - acute myeloid leukaemia
+  - acute lymphoblastic leukemia
+  - acute lymphoblastic leukaemia
+  - chronic lymphocytic leukemia
+  - chronic lymphocytic leukaemia
+  - chronic myeloid leukemia
+  - chronic myeloid leukaemia
+  - myelodysplastic syndrome
+  - myeloproliferative neoplasm
+  - nsclc
+  - sclc
+  - hcc
+  - pdac
+  - aml
+  - cll
+  - cml
+  - mds
+  - mpn
+  - dlbcl
+  - gist
+  - tnbc
+
+context_terms:
+  - chemotherapy
+  - radiotherapy
+  - immunotherapy
+  - checkpoint inhibitor
+  - immune checkpoint
+  - antibody-drug conjugate
+  - molecular targeted therapy
+  - endocrine therapy
+  - anticancer
+  - anti-cancer
+  - antitumor
+  - anti-tumor
+  - antitumour
+  - anti-tumour
+  - cancer vaccine
+  - oncolytic virus
+  - car-t
+  - cart cell
+  - adc
+  - egfr
+  - alk
+  - kras
+  - braf
+  - ntrk
+  - ret fusion
+  - her2
+  - msi-h
+  - pd-1
+  - pd-l1
+  - pdl1
+  - ctla-4
+  - brca
+  - hpv
+
+review_terms:
+  - dysplasia
+  - adenoma
+  - polyp
+  - premalignant
+  - monoclonal
+  - hematologic
+  - haematologic
+  - bone marrow
+  - genomic profiling
+  - palliative care
+

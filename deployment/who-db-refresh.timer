@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly WHO ICTRP cancer-trial database refresh
+
+[Timer]
+OnCalendar=Tue *-*-* 23:30:00 Asia/Shanghai
+RandomizedDelaySec=30m
+Persistent=true
+Unit=who-db-refresh.service
+
+[Install]
+WantedBy=timers.target

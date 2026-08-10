@@ -1,0 +1,19 @@
+[Unit]
+Description=WHO ICTRP Streamable HTTP MCP Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__SERVICE_USER__
+Group=__SERVICE_GROUP__
+WorkingDirectory=__PROJECT_ROOT__/mcp_service
+EnvironmentFile=/etc/who-mcp.env
+ExecStart=__PYTHON__ __PROJECT_ROOT__/mcp_service/server.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
