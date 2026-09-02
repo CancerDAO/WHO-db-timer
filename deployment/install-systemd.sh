@@ -7,7 +7,7 @@ SERVICE_GROUP="${WHO_DB_SERVICE_GROUP:-$(id -gn)}"
 PYTHON="${WHO_DB_PYTHON:-$PROJECT_ROOT/mcp_service/venv/bin/python}"
 TEMPLATE="$PROJECT_ROOT/deployment/who-db-refresh.service.template"
 
-for path in "$PYTHON" "$TEMPLATE" "$PROJECT_ROOT/deployment/who-db-refresh.timer"; do
+for path in "$PYTHON" "$TEMPLATE" "$PROJECT_ROOT/deployment/who-db-refresh.timer" "$PROJECT_ROOT/scripts/verify_mcp_or_rollback.py"; do
   [[ -e "$path" ]] || { echo "Missing required path: $path" >&2; exit 2; }
 done
 

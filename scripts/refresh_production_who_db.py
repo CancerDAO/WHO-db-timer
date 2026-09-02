@@ -55,7 +55,10 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--minimum-trials", type=int, default=1000)
     parser.add_argument("--minimum-old-ratio", type=float, default=0.70)
-    parser.add_argument("--backup-count", type=int, default=3)
+    parser.add_argument(
+        "--backup-count", type=int, default=1,
+        help="Number of rollback database copies to retain (default: 1).",
+    )
     parser.add_argument("--lock-file", type=Path, default=PROJECT_ROOT / "data" / ".who-refresh.lock")
     parser.add_argument("--status-file", type=Path, default=PROJECT_ROOT / "data" / "reports" / "scheduled_refresh_status.json")
     return parser.parse_args()
@@ -151,6 +154,45 @@ def rotate_backups(production: Path, count: int) -> Path | None:
     return backup
 
 
+def prune_unreferenced_raw_xml(production: Path) -> dict[str, int]:
+    """Remove XML exports that are not referenced by the production database."""
+    raw_dir = production.parent / "raw_xml"
+    if not production.is_file() or not raw_dir.is_dir():
+        return {"removed_files": 0, "removed_bytes": 0, "retained_files": 0}
+
+    conn = sqlite3.connect(production)
+    try:
+        if "who_search_runs" not in table_names(conn):
+            return {"removed_files": 0, "removed_bytes": 0, "retained_files": 0}
+        referenced = {
+            Path(str(row[0])).expanduser().resolve()
+            for row in conn.execute(
+                "SELECT xml_path FROM who_search_runs "
+                "WHERE xml_path IS NOT NULL AND TRIM(xml_path) <> ''"
+            )
+        }
+    finally:
+        conn.close()
+
+    raw_root = raw_dir.resolve()
+    removed_files = 0
+    removed_bytes = 0
+    retained_files = 0
+    for candidate in raw_dir.glob("*.xml"):
+        resolved = candidate.resolve()
+        if resolved.parent != raw_root or resolved in referenced:
+            retained_files += 1
+            continue
+        removed_bytes += candidate.stat().st_size
+        candidate.unlink()
+        removed_files += 1
+    return {
+        "removed_files": removed_files,
+        "removed_bytes": removed_bytes,
+        "retained_files": retained_files,
+    }
+
+
 def build_command(args: argparse.Namespace, staging: Path) -> list[str]:
     command = [
         args.python, str(PROJECT_ROOT / "scripts" / "run_full_who_pipeline.py"),
@@ -235,11 +277,22 @@ def main() -> None:
             status.update({
                 "status": "promoted", "finished_at": utc_now(), "validation": validation,
                 "backup": str(backup) if backup else None,
+                "backup_count": args.backup_count,
+                "raw_xml_cleanup": prune_unreferenced_raw_xml(production),
             })
             write_status(args.status_file, status)
             print(json.dumps(status, ensure_ascii=False, indent=2))
         except Exception as exc:
-            status.update({"status": "failed", "finished_at": utc_now(), "error": f"{type(exc).__name__}: {exc}"})
+            cleanup: dict[str, Any]
+            try:
+                cleanup = prune_unreferenced_raw_xml(production)
+            except Exception as cleanup_exc:  # preserve the original refresh error
+                cleanup = {"error": f"{type(cleanup_exc).__name__}: {cleanup_exc}"}
+            status.update({
+                "status": "failed", "finished_at": utc_now(),
+                "error": f"{type(exc).__name__}: {exc}",
+                "raw_xml_cleanup": cleanup,
+            })
             write_status(args.status_file, status)
             raise
 
