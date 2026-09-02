@@ -9,7 +9,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from refresh_production_who_db import production_database_mode, rotate_backups, validate_database
+from refresh_production_who_db import (
+    production_database_mode,
+    prune_unreferenced_raw_xml,
+    rotate_backups,
+    validate_database,
+)
 
 
 def create_valid_database(path: Path, trials: int = 3) -> None:
@@ -56,6 +61,31 @@ class ScheduledRefreshTests(unittest.TestCase):
                 rotate_backups(production, 2)
             backups = list((production.parent / "backups").glob("who-*.db"))
         self.assertLessEqual(len(backups), 2)
+
+    def test_raw_xml_cleanup_keeps_only_production_references(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            production = root / "who.db"
+            raw_dir = root / "raw_xml"
+            raw_dir.mkdir()
+            retained = raw_dir / "retained.xml"
+            stale = raw_dir / "stale.xml"
+            retained.write_text("current", encoding="utf-8")
+            stale.write_text("old", encoding="utf-8")
+            conn = sqlite3.connect(production)
+            try:
+                conn.execute("CREATE TABLE who_search_runs (xml_path TEXT)")
+                conn.execute("INSERT INTO who_search_runs VALUES (?)", (str(retained),))
+                conn.commit()
+            finally:
+                conn.close()
+
+            result = prune_unreferenced_raw_xml(production)
+
+            self.assertTrue(retained.exists())
+            self.assertFalse(stale.exists())
+            self.assertEqual(result["removed_files"], 1)
+            self.assertEqual(result["retained_files"], 1)
 
     def test_hybrid_database_is_detected(self) -> None:
         with tempfile.TemporaryDirectory() as folder:

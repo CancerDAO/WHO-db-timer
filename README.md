@@ -72,7 +72,7 @@ Country-level registry coverage is stored in `trial_country_records`. `trial_sit
 
 ## Scheduled server refresh
 
-The updater builds `*.next.db`, verifies integrity, foreign keys, required tables, FTS coverage, metadata and row-count continuity, then creates a backup and atomically replaces production. Failed builds leave the current production database untouched.
+The updater builds `*.next.db`, verifies integrity, foreign keys, required tables, FTS coverage, metadata and row-count continuity, then creates one rollback backup and atomically replaces production. XML exports not referenced by the active production database are removed after both successful and failed runs. After promotion, systemd restarts the loopback MCP service and performs an authenticated protocol smoke test; a failed smoke test atomically restores the backup and restarts MCP on the previous database. Failed builds leave the current production database untouched.
 
 ```bash
 chmod +x deployment/*.sh
@@ -123,6 +123,7 @@ Tests do not perform a full WHO download. The explicit server smoke test is the 
 ## Additional documentation
 
 - [Server deployment and scheduled updates (Chinese)](SERVER_SCHEDULED_UPDATE_GUIDE_ZH.md)
+- [CancerDAO platform co-location and migration (Chinese)](PLATFORM_COLOCATION_GUIDE_ZH.md)
 - [Matching integration contract](MATCHING_INTEGRATION.md)
 - [MCP service usage](mcp_service/README.md)
 

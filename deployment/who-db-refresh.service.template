@@ -9,8 +9,9 @@ User=__SERVICE_USER__
 Group=__SERVICE_GROUP__
 WorkingDirectory=__PROJECT_ROOT__
 Environment=PYTHONUNBUFFERED=1
-ExecStart=__PYTHON__ __PROJECT_ROOT__/scripts/refresh_production_who_db.py --production-db __PROJECT_ROOT__/data/who_ictrp_cancer_trials.db --database-mode auto --headful
-ExecStartPost=+/usr/bin/systemctl try-restart who-mcp.service
+ExecStart=__PYTHON__ __PROJECT_ROOT__/scripts/refresh_production_who_db.py --production-db __PROJECT_ROOT__/data/who_ictrp_cancer_trials.db --database-mode auto --backup-count 1 --headful
+ExecStartPost=+/usr/bin/systemctl --no-block restart who-mcp.service
+ExecStartPost=+__PYTHON__ __PROJECT_ROOT__/scripts/verify_mcp_or_rollback.py --production-db __PROJECT_ROOT__/data/who_ictrp_cancer_trials.db --status-file __PROJECT_ROOT__/data/reports/scheduled_refresh_status.json
 TimeoutStartSec=12h
 Nice=10
 NoNewPrivileges=true
